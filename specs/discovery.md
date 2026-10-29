@@ -4,7 +4,7 @@
 
 O briefing solicita uma aplicação de previsão do tempo na qual usuários possam buscar cidades, consultar o clima atual, ver a previsão de cinco dias e alternar entre Celsius e Fahrenheit. O uso em dispositivos móveis é um requisito explícito.
 
-Durante o discovery, foram esclarecidos estes pontos: a fonte de dados deve funcionar sem chave de API; a janela de cinco dias inclui hoje e os quatro dias seguintes; a aplicação deve tentar obter a localização automaticamente e, se não houver permissão, solicitar que a pessoa informe a cidade; Celsius é a unidade padrão; e o idioma deve acompanhar a localização, com pt-BR como fallback quando ela não puder ser obtida. O provedor, os dados a exibir e outros detalhes da experiência ainda precisam de decisão.
+Durante o discovery, foram esclarecidos estes pontos: a fonte de dados será a Open-Meteo, usando geocoding e forecast sem chave de API; a janela de cinco dias inclui hoje e os quatro dias seguintes; a aplicação deve tentar obter a localização automaticamente e, se não houver permissão, solicitar que a pessoa informe a cidade; Celsius é a unidade padrão; e o idioma deve acompanhar a localização, com pt-BR como fallback quando ela não puder ser obtida. Os dados meteorológicos exatos a exibir e outros detalhes da experiência ainda precisam de decisão.
 
 ## Requisitos Funcionais
 
@@ -26,16 +26,16 @@ O suporte a dispositivos móveis é explícito. Os requisitos abaixo são propos
 - **RNF2 — Acessibilidade (proposto):** buscar uso por teclado, estrutura semântica, rótulos acessíveis e contraste adequado. O nível de conformidade esperado está em aberto.
 - **RNF3 — Desempenho (proposto):** busca e carregamento das condições devem responder em tempo aceitável. Os limites e a conexão de referência ainda precisam ser definidos.
 - **RNF4 — Resiliência (proposto):** falhas de rede ou do provedor não devem deixar a interface sem explicação; comportamento de nova tentativa e eventual uso de dados em cache precisam ser definidos.
-- **RNF5 — Fonte sem chave de API (restrição esclarecida):** a solução deve usar uma fonte de dados que não exija chave de API. Isso não define qual provedor, seus termos, cobertura ou limites de uso.
+- **RNF5 — Fonte de dados (decisão confirmada):** usar Open-Meteo para geocoding e forecast, sem chave de API. Termos, cobertura e limites de uso ainda devem ser verificados.
 - **RNF6 — Privacidade (a detalhar):** a localização automática foi solicitada; definir quando e como explicar seu uso e solicitar permissão, respeitando a alternativa de entrada manual já definida.
 
 ## Riscos
 
-As probabilidades e os impactos são avaliações iniciais para orientar discovery, não medições. Devem ser revistos quando as decisões de produto e o provedor forem conhecidos.
+As probabilidades e os impactos são avaliações iniciais para orientar discovery, não medições. Devem ser revistos quando os detalhes de produto e as condições de uso da Open-Meteo forem conhecidos.
 
 | Risco | Probabilidade | Impacto | Mitigação proposta |
 | --- | --- | --- | --- |
-| A fonte sem chave escolhida ter indisponibilidade, limites de uso ou cobertura insuficiente | Média | Alto | Avaliar termos, cobertura e limites antes da escolha; prever mensagens de erro e nova tentativa. |
+| A Open-Meteo ter indisponibilidade, limites de uso ou cobertura insuficiente para as localidades buscadas | Média | Alto | Avaliar termos, cobertura e limites de uso; prever mensagens de erro e nova tentativa. |
 | Busca retornar cidades homônimas ou localização imprecisa | Alta | Médio | Exibir contexto geográfico nos resultados (por exemplo, região e país); validar com usuários. |
 | Falha ou lentidão na rede ou no serviço impedir a consulta | Média | Alto | Definir estados de carregamento e erro, permitir nova tentativa e avaliar cache após decidir requisitos offline. |
 | Dados diários serem associados ao dia errado por diferenças de fuso horário | Média | Médio | Definir fuso horário e limites do dia usados pela previsão; validar datas em localidades diferentes. |
@@ -45,7 +45,7 @@ As probabilidades e os impactos são avaliações iniciais para orientar discove
 
 ## Perguntas em Aberto (Open Questions)
 
-1. **Qual provedor de dados será usado, além da exigência de não precisar de chave de API?** Quais requisitos de cobertura, atualização, termos de uso e limites são aceitáveis? **Impacto:** determina a viabilidade, cobertura geográfica, confiabilidade e eventuais restrições de distribuição.
+1. **Quais requisitos de cobertura, atualização, termos de uso e limites de uso da Open-Meteo são aceitáveis?** **Impacto:** determina a viabilidade para as localidades atendidas, a confiabilidade esperada e eventuais restrições de distribuição.
 2. **Quais informações devem aparecer no clima atual e em cada dia da previsão?** A previsão será um resumo diário ou incluirá períodos/horas? **Impacto:** afeta a utilidade percebida, o contrato com a fonte de dados e a organização da interface.
 3. **Como a busca deve tratar cidades com o mesmo nome?** Quais dados de contexto devem aparecer nos resultados, e a busca deve sugerir resultados enquanto a pessoa digita? **Impacto:** sem desambiguação, o usuário pode consultar a localidade errada; sugestões também afetam a experiência e o comportamento da busca.
 4. **Em que momento a aplicação deve solicitar acesso à localização? O que deve ocorrer se o recurso de localização estiver indisponível ou retornar uma posição imprecisa?** A entrada manual foi definida como alternativa quando não houver permissão. **Impacto:** afeta o fluxo inicial, a confiança do usuário e a forma de selecionar a cidade correta.
@@ -63,7 +63,7 @@ Estas hipóteses não são decisões e precisam ser confirmadas antes de orienta
 
 - A aplicação será acessada por uma interface digital; o briefing não define plataforma ou tecnologia.
 - A aplicação tentará identificar a localização automaticamente e recorrerá à entrada manual da cidade se não houver permissão.
-- Os dados meteorológicos virão de um serviço externo, sujeito a disponibilidade e cobertura; nenhum provedor foi escolhido.
+- Os dados meteorológicos e de geocoding serão fornecidos pela Open-Meteo, sujeitos a disponibilidade e cobertura.
 - Não há requisito confirmado de autenticação, favoritos, histórico ou persistência de preferências.
 
 ## Personas Hipotéticas
@@ -75,7 +75,7 @@ Personas iniciais para orientar perguntas de discovery; não foram validadas com
 
 ## Decisões Confirmadas no Discovery
 
-- **Fonte de dados:** há a restrição de não exigir chave de API. O provedor específico continua em aberto.
+- **Fonte de dados:** Open-Meteo para geocoding e forecast, sem chave de API.
 - **Janela da previsão:** hoje mais os quatro dias seguintes.
 - **Localização:** tentar obter a localização automaticamente; se não houver permissão, solicitar a cidade manualmente.
 - **Idioma:** selecionar conforme a localização; usar pt-BR se ela não puder ser obtida. Idiomas suportados e regra de seleção continuam em aberto.
